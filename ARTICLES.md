@@ -51,4 +51,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`34ce32b47199c599f2c0eec823f101ef0b2ce394`](https://github.com/erickchenyn/read-it-later/commit/34ce32b47199c599f2c0eec823f101ef0b2ce394).*
+*This document was automatically generated based on commit [`43e0d62c68849be2bbfe5021468ff1b51fbffd52`](https://github.com/erickchenyn/read-it-later/commit/43e0d62c68849be2bbfe5021468ff1b51fbffd52).*
