@@ -1,464 +1,8 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Articles Reader</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+let currentSource = 'articles';
+let fileData = {};
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    height: 100vh;
-    display: flex;
-    background: #f6f8fa;
-    color: #1f2328;
-  }
+const fileIconSvg = '<svg class="file-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/></svg>';
 
-  /* Sidebar */
-  .sidebar {
-    width: 280px;
-    min-width: 180px;
-    max-width: 50vw;
-    height: 100vh;
-    overflow-y: auto;
-    background: #ffffff;
-    border-right: 1px solid #d1d9e0;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .resize-handle {
-    width: 4px;
-    margin-left: -2px;
-    margin-right: -2px;
-    cursor: col-resize;
-    background: transparent;
-    transition: background 0.15s;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 10;
-  }
-
-  .resize-handle:hover,
-  .resize-handle.active {
-    background: #0969da;
-  }
-
-  .tree {
-    padding: 8px 0;
-    flex: 1;
-    overflow-y: auto;
-  }
-
-  .folder {
-    user-select: none;
-  }
-
-  .folder-header {
-    display: flex;
-    align-items: center;
-    padding: 6px 16px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    color: #1f2328;
-    gap: 6px;
-    transition: background 0.15s;
-  }
-
-  .folder-header:hover {
-    background: #f6f8fa;
-  }
-
-  .folder-header .arrow {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    text-align: center;
-    line-height: 16px;
-    font-size: 12px;
-    color: #656d76;
-    transition: transform 0.2s;
-    flex-shrink: 0;
-  }
-
-  .folder-header .arrow.open {
-    transform: rotate(90deg);
-  }
-
-  .folder-header .folder-icon {
-    flex-shrink: 0;
-    color: #54aeff;
-  }
-
-  .file-list {
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.3s ease;
-  }
-
-  .file-list.open {
-    max-height: 2000px;
-  }
-
-  .file-item {
-    display: flex;
-    align-items: center;
-    padding: 5px 16px 5px 38px;
-    cursor: pointer;
-    font-size: 13px;
-    color: #656d76;
-    gap: 6px;
-    transition: background 0.15s, color 0.15s;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-  }
-
-  .file-item:hover {
-    background: #f6f8fa;
-    color: #1f2328;
-  }
-
-  .file-item.active {
-    background: #ddf4ff;
-    color: #0969da;
-    font-weight: 500;
-  }
-
-  .file-item .file-icon {
-    flex-shrink: 0;
-    color: #656d76;
-  }
-
-  .file-item .file-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .file-item .bilingual-badge {
-    flex-shrink: 0;
-    font-size: 10px;
-    padding: 1px 5px;
-    border-radius: 8px;
-    background: #ddf4ff;
-    color: #0969da;
-    font-weight: 500;
-    margin-left: auto;
-  }
-
-  /* Content */
-  .content {
-    flex: 1;
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .content-body {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
-  }
-
-  .pane {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .pane + .pane {
-    border-left: 1px solid #d1d9e0;
-  }
-
-  .pane-header {
-    padding: 12px 24px;
-    font-size: 13px;
-    color: #656d76;
-    border-bottom: 1px solid #d1d9e0;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .notes-btn {
-    background: none;
-    border: none;
-    padding: 2px;
-    color: #656d76;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
-
-  .notes-btn:hover {
-    color: #1f2328;
-  }
-
-  .notes-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .notes-modal {
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    width: 520px;
-    max-width: 90vw;
-    max-height: 70vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .notes-modal-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 12px 20px;
-  }
-
-  .notes-modal-empty {
-    padding: 32px 0;
-    text-align: center;
-    color: #656d76;
-    font-size: 14px;
-  }
-
-  .notes-modal-item {
-    padding: 12px 0;
-    border-bottom: 1px solid #f0f2f5;
-  }
-
-  .notes-modal-item:last-child {
-    border-bottom: none;
-  }
-
-  .notes-modal-quote {
-    font-size: 13px;
-    color: #1f2328;
-    background: #fff8c5;
-    padding: 4px 8px;
-    border-radius: 4px;
-    border-left: 3px solid #d4a72c;
-    line-height: 1.5;
-  }
-
-  .notes-modal-note {
-    font-size: 13px;
-    color: #656d76;
-    margin-top: 6px;
-    padding-left: 11px;
-    line-height: 1.5;
-  }
-
-  .pane-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 32px 24px;
-    display: flex;
-    justify-content: center;
-  }
-
-  .content-body:not(.dual) .markdown-body {
-    max-width: 860px;
-    width: 100%;
-  }
-
-  .content-body.dual .markdown-body {
-    max-width: 100%;
-    width: 100%;
-  }
-
-  .markdown-body {
-    font-size: 15px;
-    line-height: 1.7;
-    background: transparent;
-  }
-
-  .markdown-body img {
-    max-width: 100%;
-    border-radius: 6px;
-  }
-
-  .placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: #656d76;
-    font-size: 15px;
-    flex: 1;
-  }
-
-  /* Notes highlight */
-  mark.note-highlight {
-    background: #fff8c5;
-    border-bottom: 2px solid #d4a72c;
-    padding: 0 1px;
-    border-radius: 2px;
-    cursor: pointer;
-    position: relative;
-  }
-
-  mark.note-highlight-pending {
-    background: #fff8c5;
-    border-bottom: 2px solid #d4a72c;
-    padding: 0 1px;
-    border-radius: 2px;
-  }
-
-  /* Note tooltip */
-  .note-tooltip {
-    position: fixed;
-    max-width: 320px;
-    padding: 8px 12px;
-    background: #1f2328;
-    color: #f0f0f0;
-    font-size: 13px;
-    line-height: 1.5;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    z-index: 100;
-    pointer-events: none;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  /* Note input popover */
-  .note-input-popover {
-    position: fixed;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: #ffffff;
-    border: 1px solid #d1d9e0;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    padding: 6px;
-  }
-
-  .note-input-popover input {
-    width: 280px;
-    padding: 6px 10px;
-    border: 1px solid #d1d9e0;
-    border-radius: 6px;
-    font-size: 13px;
-    outline: none;
-    font-family: inherit;
-    color: #1f2328;
-  }
-
-  .note-input-popover input:focus {
-    border-color: #0969da;
-    box-shadow: 0 0 0 2px rgba(9,105,218,0.15);
-  }
-
-  .note-input-popover input::placeholder {
-    color: #afb8c1;
-  }
-
-  .note-input-popover button {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 6px;
-    font-size: 13px;
-    cursor: pointer;
-    font-family: inherit;
-    white-space: nowrap;
-  }
-
-  .note-input-popover .btn-save {
-    background: #1f2328;
-    color: #ffffff;
-  }
-
-  .note-input-popover .btn-save:hover {
-    background: #32383f;
-  }
-
-  .note-input-popover .btn-highlight {
-    background: #fff8c5;
-    color: #6a5300;
-    border: 1px solid #d4a72c;
-  }
-
-  .note-input-popover .btn-highlight:hover {
-    background: #ffef99;
-  }
-
-  .note-input-popover .btn-delete {
-    background: #fff;
-    color: #cf222e;
-    border: 1px solid #cf222e;
-  }
-
-  .note-input-popover .btn-delete:hover {
-    background: #cf222e;
-    color: #fff;
-  }
-
-  .note-fab {
-    position: fixed;
-    z-index: 99;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 1px solid #d1d9e0;
-    background: #ffffff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: #656d76;
-    transition: background 0.15s, color 0.15s;
-  }
-
-  .note-fab:hover {
-    background: #fff8c5;
-    color: #6a5300;
-    border-color: #d4a72c;
-  }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #d1d9e0; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #afb8c1; }
-</style>
-</head>
-<body>
-
-<div class="sidebar" id="sidebar">
-  <div class="tree" id="tree"></div>
-</div>
-
-<div class="resize-handle" id="resize-handle"></div>
-
-<div class="content">
-  <div class="content-body" id="content-body">
-    <div class="placeholder">Select an article from the sidebar</div>
-  </div>
-</div>
-
-<script>
-// File tree data - fetched dynamically from server
-let articles = {};
-
-// Process articles: merge bilingual pairs
-// A bilingual pair is: "xxx.md" (English) + "xxx-cn.md" (Chinese)
 function processArticles(fileList) {
   const cnSuffix = '-cn.md';
   const cnFiles = new Set(fileList.filter(f => f.endsWith(cnSuffix)));
@@ -467,51 +11,38 @@ function processArticles(fileList) {
 
   for (const file of fileList) {
     if (processed.has(file)) continue;
-
     if (file.endsWith(cnSuffix)) {
-      // This is a CN file, find its EN counterpart
       const base = file.slice(0, -cnSuffix.length);
       const enFile = base + '.md';
       if (fileList.includes(enFile)) {
-        // Bilingual pair - show CN entry
         entries.push({ cn: file, en: enFile, bilingual: true });
         processed.add(file);
         processed.add(enFile);
       } else {
-        // CN only
         entries.push({ cn: file, bilingual: false });
         processed.add(file);
       }
     } else {
-      // Check if this EN file has a CN counterpart
       const base = file.slice(0, -'.md'.length);
       const cnFile = base + cnSuffix;
       if (cnFiles.has(cnFile)) {
-        // Bilingual pair - will be handled when we hit the CN file
-        // But in case CN comes after EN in the list, handle here
         entries.push({ cn: cnFile, en: file, bilingual: true });
         processed.add(file);
         processed.add(cnFile);
       } else {
-        // Single file (no CN counterpart)
         entries.push({ file: file, bilingual: false });
         processed.add(file);
       }
     }
   }
-
   return entries;
 }
-
-let sortedFolders = [];
 
 const treeEl = document.getElementById('tree');
 const contentBody = document.getElementById('content-body');
 
-// Content cache: stores markdown text of each file
-const contentCache = {};
+let contentCache = {};
 
-// Extract title from markdown content (first # heading or first line)
 function extractTitle(md) {
   const match = md.match(/^#\s+(.+)$/m);
   if (match) return match[1].trim();
@@ -528,9 +59,9 @@ async function fetchMd(path) {
   return md;
 }
 
-// Build tree UI
-function buildTree() {
-  sortedFolders.forEach((folder, idx) => {
+function buildGroupedTree(data) {
+  const folders = Object.keys(data).sort((a, b) => b.localeCompare(a));
+  folders.forEach((folder, idx) => {
     const folderEl = document.createElement('div');
     folderEl.className = 'folder';
 
@@ -547,37 +78,23 @@ function buildTree() {
     const listEl = document.createElement('div');
     listEl.className = 'file-list' + (idx === 0 ? ' open' : '');
 
-    const entries = processArticles(articles[folder]);
-
+    const entries = processArticles(data[folder]);
     entries.forEach(entry => {
       const itemEl = document.createElement('div');
       itemEl.className = 'file-item';
 
       if (entry.bilingual) {
-        // Use CN file as the display key
-        itemEl.dataset.cn = `${folder}/${entry.cn}`;
-        itemEl.dataset.en = `${folder}/${entry.en}`;
+        itemEl.dataset.cn = `articles/${folder}/${entry.cn}`;
+        itemEl.dataset.en = `articles/${folder}/${entry.en}`;
         itemEl.dataset.bilingual = 'true';
-        itemEl.innerHTML = `
-          <svg class="file-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
-          </svg>
-          <span class="file-name">${entry.cn}</span>
-          <span class="bilingual-badge">CN / EN</span>
-        `;
-        // Preload both files and update title from CN
-        preloadTitle(folder, entry.cn, itemEl);
-        preloadContent(folder, entry.en);
+        itemEl.innerHTML = `${fileIconSvg}<span class="file-name">${entry.cn}</span><span class="bilingual-badge">CN / EN</span>`;
+        preloadTitle(`articles/${folder}`, entry.cn, itemEl);
+        preloadContent(`articles/${folder}`, entry.en);
       } else {
         const file = entry.cn || entry.file;
-        itemEl.dataset.file = `${folder}/${file}`;
-        itemEl.innerHTML = `
-          <svg class="file-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
-          </svg>
-          <span class="file-name">${file}</span>
-        `;
-        preloadTitle(folder, file, itemEl);
+        itemEl.dataset.file = `articles/${folder}/${file}`;
+        itemEl.innerHTML = `${fileIconSvg}<span class="file-name">${file}</span>`;
+        preloadTitle(`articles/${folder}`, file, itemEl);
       }
 
       itemEl.addEventListener('click', () => handleClick(itemEl));
@@ -585,8 +102,7 @@ function buildTree() {
     });
 
     headerEl.addEventListener('click', () => {
-      const arrow = headerEl.querySelector('.arrow');
-      arrow.classList.toggle('open');
+      headerEl.querySelector('.arrow').classList.toggle('open');
       listEl.classList.toggle('open');
     });
 
@@ -596,38 +112,44 @@ function buildTree() {
   });
 }
 
+function buildFlatTree(files) {
+  files.forEach(file => {
+    const itemEl = document.createElement('div');
+    itemEl.className = 'file-item flat';
+    itemEl.dataset.file = `scratch/${file}`;
+    itemEl.innerHTML = `${fileIconSvg}<span class="file-name">${file}</span>`;
+    itemEl.addEventListener('click', () => handleClick(itemEl));
+    treeEl.appendChild(itemEl);
+  });
+}
+
 async function preloadContent(folder, file) {
-  const path = `${folder}/${file}`;
-  try { await fetchMd(path); } catch (e) { /* ignore */ }
+  try { await fetchMd(`${folder}/${file}`); } catch (e) { /* ignore */ }
 }
 
 async function preloadTitle(folder, file, itemEl) {
-  const path = `${folder}/${file}`;
   try {
-    const md = await fetchMd(path);
+    const md = await fetchMd(`${folder}/${file}`);
     const title = extractTitle(md);
     const el = itemEl.querySelector('.file-name');
     if (el) el.textContent = title;
-  } catch (e) {
-    // ignore
-  }
+  } catch (e) { /* ignore */ }
 }
 
 async function handleClick(itemEl) {
-  // Update active state
   document.querySelectorAll('.file-item.active').forEach(el => el.classList.remove('active'));
   itemEl.classList.add('active');
 
-  // Update URL query param
   const filePath = itemEl.dataset.bilingual === 'true' ? itemEl.dataset.cn : itemEl.dataset.file;
   const url = new URL(window.location);
+  url.searchParams.set('source', currentSource);
   url.searchParams.set('file', filePath);
-  history.pushState({ file: filePath }, '', url);
+  history.pushState({ source: currentSource, file: filePath }, '', url);
 
   if (itemEl.dataset.bilingual === 'true') {
-    await loadArticles([itemEl.dataset.cn, itemEl.dataset.en]);
+    await loadContent([itemEl.dataset.cn, itemEl.dataset.en]);
   } else {
-    await loadArticles([itemEl.dataset.file]);
+    await loadContent([itemEl.dataset.file]);
   }
 }
 
@@ -635,7 +157,7 @@ function renderPane(path, html) {
   return `
     <div class="pane" data-path="${path}">
       <div class="pane-header">
-        <span>${path.replace('/', ' / ')}</span>
+        <span>${path}</span>
         <button class="notes-btn" data-notes-path="${path}">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm11 3a.75.75 0 0 1-.75.75h-8.5a.75.75 0 0 1 0-1.5h8.5a.75.75 0 0 1 .75.75Zm-.75 3.25a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5Z"/></svg>
         </button>
@@ -647,14 +169,13 @@ function renderPane(path, html) {
   `;
 }
 
-
-async function loadArticles(paths) {
+async function loadContent(paths) {
   closeNotesModal();
   let markdowns;
   try {
     markdowns = await Promise.all(paths.map(p => fetchMd(p)));
   } catch (e) {
-    contentBody.innerHTML = `<div class="placeholder">Failed to load file</div>`;
+    contentBody.innerHTML = '<div class="placeholder">Failed to load file</div>';
     return;
   }
 
@@ -683,60 +204,104 @@ async function loadArticles(paths) {
   }
 }
 
-// Fetch articles list from server, then build the tree
-async function init() {
-  try {
-    const res = await fetch('/api/articles');
-    articles = await res.json();
-  } catch (e) {
-    console.error('Failed to fetch articles:', e);
-  }
-  sortedFolders = Object.keys(articles).sort((a, b) => b.localeCompare(a));
-  buildTree();
+async function loadSource(source) {
+  currentSource = source;
+  contentCache = {};
+  treeEl.innerHTML = '';
 
-  // Open file from URL query param after tree is built
-  openFileFromParam(new URLSearchParams(window.location.search).get('file'));
+  try {
+    const res = await fetch(`/api/files?source=${source}`);
+    const result = await res.json();
+    fileData = result.data;
+    if (result.type === 'grouped') {
+      buildGroupedTree(fileData);
+    } else {
+      buildFlatTree(fileData);
+    }
+  } catch (e) {
+    treeEl.innerHTML = '<div style="padding:16px;color:#656d76;font-size:13px">Failed to load</div>';
+  }
+}
+
+async function switchSource(source) {
+  document.querySelectorAll('.source-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.source-tab[data-source="${source}"]`).classList.add('active');
+
+  await loadSource(source);
+
+  const url = new URL(window.location);
+  url.searchParams.set('source', source);
+  url.searchParams.delete('file');
+  history.pushState({}, '', url);
+
+  contentBody.className = 'content-body';
+  contentBody.innerHTML = '<div class="placeholder">Select a file from the sidebar</div>';
+}
+
+document.getElementById('source-switcher').addEventListener('click', (e) => {
+  const tab = e.target.closest('.source-tab');
+  if (!tab || tab.dataset.source === currentSource) return;
+  switchSource(tab.dataset.source);
+});
+
+async function init() {
+  const params = new URLSearchParams(window.location.search);
+  const source = params.get('source') || 'articles';
+  const file = params.get('file');
+
+  if (source !== 'articles') {
+    document.querySelectorAll('.source-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`.source-tab[data-source="${source}"]`)?.classList.add('active');
+  }
+
+  await loadSource(source);
+  if (file) openFileFromParam(file);
 }
 init();
 
-// Open file from URL query param
 function openFileFromParam(filePath) {
   if (!filePath) return;
+  if (!filePath.startsWith('articles/') && !filePath.startsWith('scratch/')) {
+    filePath = 'articles/' + filePath;
+  }
   const target = document.querySelector(`.file-item[data-cn="${CSS.escape(filePath)}"]`)
     || document.querySelector(`.file-item[data-file="${CSS.escape(filePath)}"]`);
   if (!target) return;
-  // Ensure parent folder is expanded
   const fileList = target.closest('.file-list');
   if (fileList && !fileList.classList.contains('open')) {
     fileList.classList.add('open');
-    const arrow = fileList.previousElementSibling.querySelector('.arrow');
+    const arrow = fileList.previousElementSibling?.querySelector('.arrow');
     if (arrow) arrow.classList.add('open');
   }
-  // Activate without pushing state again
   document.querySelectorAll('.file-item.active').forEach(el => el.classList.remove('active'));
   target.classList.add('active');
   if (target.dataset.bilingual === 'true') {
-    loadArticles([target.dataset.cn, target.dataset.en]);
+    loadContent([target.dataset.cn, target.dataset.en]);
   } else {
-    loadArticles([target.dataset.file]);
+    loadContent([target.dataset.file]);
   }
 }
 
 window.addEventListener('popstate', () => {
-  const filePath = new URLSearchParams(window.location.search).get('file');
-  if (filePath) {
+  const params = new URLSearchParams(window.location.search);
+  const source = params.get('source') || 'articles';
+  const filePath = params.get('file');
+
+  if (source !== currentSource) {
+    switchSource(source).then(() => {
+      if (filePath) openFileFromParam(filePath);
+    });
+  } else if (filePath) {
     openFileFromParam(filePath);
   } else {
-    // No file param - show placeholder
     document.querySelectorAll('.file-item.active').forEach(el => el.classList.remove('active'));
     contentBody.className = 'content-body';
-    contentBody.innerHTML = '<div class="placeholder">Select an article from the sidebar</div>';
+    contentBody.innerHTML = '<div class="placeholder">Select a file from the sidebar</div>';
   }
 });
 
 // ==================== Notes system ====================
 
-// Cache for notes per file
 const notesCache = {};
 
 async function fetchNotes(filePath) {
@@ -759,7 +324,6 @@ async function saveNotes(filePath, notes) {
   });
 }
 
-// Walk all text nodes in an element, in document order
 function getTextNodes(el) {
   const nodes = [];
   const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
@@ -768,7 +332,6 @@ function getTextNodes(el) {
   return nodes;
 }
 
-// Find text node and local offset for a given global char offset
 function findPositionAtOffset(textNodes, globalOffset) {
   let cumulative = 0;
   for (const node of textNodes) {
@@ -778,12 +341,10 @@ function findPositionAtOffset(textNodes, globalOffset) {
     }
     cumulative += len;
   }
-  // Clamp to end
   const lastNode = textNodes[textNodes.length - 1];
   return { node: lastNode, offset: lastNode.textContent.length };
 }
 
-// Compute global char offset of a position within the markdown-body
 function getGlobalOffset(container, targetNode, targetOffset) {
   const textNodes = getTextNodes(container);
   let cumulative = 0;
@@ -794,7 +355,6 @@ function getGlobalOffset(container, targetNode, targetOffset) {
   return cumulative;
 }
 
-// Wrap a range spanning across text nodes with <mark> tags
 function highlightRange(container, startOffset, endOffset, noteId, hasNote) {
   const textNodes = getTextNodes(container);
   let cumulative = 0;
@@ -805,7 +365,6 @@ function highlightRange(container, startOffset, endOffset, noteId, hasNote) {
     const nodeEnd = cumulative + node.textContent.length;
     cumulative = nodeEnd;
 
-    // Check overlap
     const overlapStart = Math.max(startOffset, nodeStart);
     const overlapEnd = Math.min(endOffset, nodeEnd);
     if (overlapStart >= overlapEnd) continue;
@@ -813,7 +372,6 @@ function highlightRange(container, startOffset, endOffset, noteId, hasNote) {
     const localStart = overlapStart - nodeStart;
     const localEnd = overlapEnd - nodeStart;
 
-    // Skip whitespace-only text nodes between block elements (e.g. between <p> tags)
     const textSlice = node.textContent.slice(localStart, localEnd);
     if (!textSlice.trim()) continue;
 
@@ -831,17 +389,14 @@ function highlightRange(container, startOffset, endOffset, noteId, hasNote) {
   return marks;
 }
 
-// Apply all notes to a rendered markdown container
 async function applyNotes(filePath, container) {
   if (!container) return;
   const notes = await fetchNotes(filePath);
   notesCache[filePath] = notes;
   container.dataset.filePath = filePath;
 
-  // Sort notes by startOffset ascending to apply them in order
   const sorted = [...notes].sort((a, b) => a.startOffset - b.startOffset);
 
-  // Apply highlights (apply in reverse so offsets stay valid)
   for (let i = sorted.length - 1; i >= 0; i--) {
     const note = sorted[i];
     highlightRange(container, note.startOffset, note.endOffset, note.id, !!note.note);
@@ -868,7 +423,6 @@ function removePopover() {
 }
 
 function showNoteInput(x, y, callback) {
-  // Only remove existing popover, keep pending highlights
   if (activePopover) {
     activePopover.remove();
     activePopover = null;
@@ -885,7 +439,6 @@ function showNoteInput(x, y, callback) {
   document.body.appendChild(popover);
   activePopover = popover;
 
-  // Position: try to show below the selection, adjust if out of viewport
   const rect = popover.getBoundingClientRect();
   let left = x - rect.width / 2;
   let top = y + 8;
@@ -932,7 +485,6 @@ document.addEventListener('click', (e) => {
   const note = notes.find(n => n.id === noteId);
   if (!note) return;
 
-  // Clear text selection to avoid triggering the mouseup handler
   window.getSelection().removeAllRanges();
 
   removeTooltip();
@@ -971,7 +523,7 @@ document.addEventListener('click', (e) => {
     removePopover();
     note.note = newNote;
     await saveNotes(filePath, notes);
-    reloadCurrentArticle();
+    reloadCurrentFile();
   };
 
   const deleteNote = async () => {
@@ -979,7 +531,7 @@ document.addEventListener('click', (e) => {
     const idx = notes.findIndex(n => n.id === noteId);
     if (idx !== -1) notes.splice(idx, 1);
     await saveNotes(filePath, notes);
-    reloadCurrentArticle();
+    reloadCurrentFile();
   };
 
   input.addEventListener('keydown', (e) => {
@@ -1006,10 +558,8 @@ function removeNoteFab() {
 }
 
 document.addEventListener('mouseup', (e) => {
-  // Ignore if clicking on the popover or fab itself
   if (activePopover && activePopover.contains(e.target)) return;
   if (noteFab && noteFab.contains(e.target)) return;
-  // Ignore if clicking on an existing highlight (handled by click handler)
   if (e.target.closest('mark.note-highlight')) return;
 
   removeNoteFab();
@@ -1026,7 +576,6 @@ document.addEventListener('mouseup', (e) => {
   const selectedText = sel.toString().trim();
   if (!selectedText) return;
 
-  // Show floating note button near the end of selection
   const rects = range.getClientRects();
   const lastRect = rects[rects.length - 1];
 
@@ -1041,7 +590,6 @@ document.addEventListener('mouseup', (e) => {
   fab.style.left = left + 'px';
   fab.style.top = top + 'px';
 
-  // Prevent mousedown on fab from clearing the selection
   fab.addEventListener('mousedown', (ev) => {
     ev.preventDefault();
     ev.stopPropagation();
@@ -1063,7 +611,6 @@ document.addEventListener('mouseup', (e) => {
     const px = lastRect.right;
     const py = lastRect.bottom;
 
-    // Apply temporary visual highlight and clear selection
     const pendingMarks = highlightRange(container, startOffset, endOffset, 'pending', false);
     pendingMarks.forEach(m => { m.className = 'note-highlight-pending'; });
     currentSel.removeAllRanges();
@@ -1089,7 +636,7 @@ document.addEventListener('mouseup', (e) => {
       };
       notes.push(newNote);
       await saveNotes(filePath, notes);
-      reloadCurrentArticle();
+      reloadCurrentFile();
     });
   });
 
@@ -1216,7 +763,7 @@ document.addEventListener('click', (e) => {
 });
 
 // ---- Reload current article to re-apply highlights ----
-function reloadCurrentArticle() {
+function reloadCurrentFile() {
   const filePath = new URLSearchParams(window.location.search).get('file');
   if (filePath) openFileFromParam(filePath);
 }
@@ -1251,6 +798,3 @@ document.addEventListener('mouseup', () => {
   document.body.style.cursor = '';
   document.body.style.userSelect = '';
 });
-</script>
-</body>
-</html>

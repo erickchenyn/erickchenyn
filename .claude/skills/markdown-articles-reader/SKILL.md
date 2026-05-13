@@ -3,14 +3,14 @@ name: markdown-articles-reader
 description: Use when user wants to start/open the articles reader. Triggers on phrases like "启动文章阅读器", "打开阅读器", "start articles reader", etc.
 ---
 
-Start the articles reader — a local web app for browsing and annotating saved markdown articles.
+Start the reader — a local web app for browsing and annotating saved markdown articles and scratch notes.
 
 ## Architecture
 
-- **Server**: `<project_root>/articles/local.py` — Python HTTP server, serves static files, provides a notes API (`POST /api/notes`) and an articles listing API (`GET /api/articles`)
-- **Frontend**: `<project_root>/articles/index.html` — SPA with sidebar file tree (grouped by date), markdown rendering, CN/EN bilingual dual-pane view, text highlighting, and note annotations
+- **Server**: `<project_root>/reader/local.py` — Python HTTP server, serves static files from project root, provides `/api/sources`, `/api/files?source=articles|scratch`, and `POST /api/notes`
+- **Frontend**: `<project_root>/reader/index.html` — SPA with source switcher (Articles / Scratch), sidebar file tree, markdown rendering, CN/EN bilingual dual-pane view, text highlighting, and note annotations
 - **Articles**: stored as `.md` files under `<project_root>/articles/<YYYY-MM-DD>/`, with optional `.notes.json` sidecar files for highlights
-- **Article index**: dynamically fetched from the server via `GET /api/articles` — no manual index update needed
+- **Scratch**: stored as files under `<project_root>/scratch/` (flat, first level only)
 
 ## Steps
 
@@ -18,7 +18,7 @@ Start the articles reader — a local web app for browsing and annotating saved 
 
 1. Start the server in background on port 4321:
    ```bash
-   cd <project_root>/articles && PORT=4321 python3 local.py
+   cd <project_root>/reader && PORT=4321 python3 local.py
    ```
 2. Open the browser:
    ```bash
@@ -36,5 +36,6 @@ lsof -ti:4321 | xargs kill
 
 ## Notes
 
-- The server must be started from the `<project_root>/articles/` directory (it does `os.chdir` to its own directory)
+- The server must be started from the `<project_root>/reader/` directory (it chdir's to the project root on startup)
 - Default port is 4321, can be overridden via `PORT` env var
+- Static file access is restricted to `articles/`, `scratch/`, and `reader/` directories
