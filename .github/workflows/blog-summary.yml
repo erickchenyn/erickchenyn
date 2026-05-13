@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "blogs/*.md"
+      - "blogs/*"
       - ".github/workflows/blog-summary.yml"
   workflow_dispatch:
 
@@ -28,12 +28,10 @@ jobs:
           echo "# Blogs" > BLOGS.md
           echo "" >> BLOGS.md
 
-          for md_file in $(ls -t blogs/*.md 2>/dev/null); do
-            [ -f "$md_file" ] || continue
-            title=$(head -20 "$md_file" | grep '^# ' | head -1 | sed 's/^# //')
-            if [ -n "$title" ]; then
-              echo "- [$title]($md_file)" >> BLOGS.md
-            fi
+          for file in $(ls -t blogs/* 2>/dev/null); do
+            [ -f "$file" ] || continue
+            name=$(basename "$file")
+            echo "- [$name]($file)" >> BLOGS.md
           done
 
           echo "" >> BLOGS.md
