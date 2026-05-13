@@ -5,8 +5,9 @@ on:
     branches:
       - main
     paths:
-      - "articles/**"
+      - "articles/**/*.md"
       - ".github/workflows/article-summary.yml"
+  workflow_dispatch:
 
 jobs:
   article-summary:
