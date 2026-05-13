@@ -1,0 +1,54 @@
+# Read It Later
+
+- **2026-05-13**
+  - [Agent Memory 调研与评测](articles/2026-05-13/moxt-agent-memory-research.md)
+- **2026-05-12**
+  - [AI 正在杀死"传统公司"？](articles/2026-05-12/wx-bi4KHO97Tj8W2LLrkNqCZw.md)
+  - [AI 时代最大的护城河](articles/2026-05-12/x-2052870394093408558-cn.md)
+  - [The next biggest moat in AI](articles/2026-05-12/x-2052870394093408558.md)
+  - [为什么 Claude Code 新 UI，看起来更简陋了](articles/2026-05-12/x-2053830423331865077.md)
+- **2026-05-11**
+  - [多 Agent 系统：真正有效的实践](articles/2026-05-11/x-2047054401341370639-cn.md)
+  - [Multi-Agents: What's Actually Working](articles/2026-05-11/x-2047054401341370639.md)
+  - [如何构建一个每天自动变聪明的 Obsidian 知识库](articles/2026-05-11/x-2052235121416188114-cn.md)
+  - [How to Build an Obsidian Knowledge Vault That Gets Smarter Every Day Without You Doing Anything](articles/2026-05-11/x-2052235121416188114.md)
+  - [使用 Claude Code：HTML 不可思议的有效性](articles/2026-05-11/x-2052809885763747935-cn.md)
+  - [Using Claude Code: The Unreasonable Effectiveness of HTML](articles/2026-05-11/x-2052809885763747935.md)
+  - [元-元-提示词：让 AI Agent 真正起效的秘密](articles/2026-05-11/x-2053127519872614419-cn.md)
+  - [Meta-Meta-Prompting: The Secret to Making AI Agents Work](articles/2026-05-11/x-2053127519872614419.md)
+  - [Markdown 还是 HTML？这是个蠢问题！](articles/2026-05-11/x-2053138568818684101.md)
+  - [AI Native 时代组织研发的思考](articles/2026-05-11/x-2053314677237846060.md)
+  - [深度拆解：AI Agent Harness 的构造【译】](articles/2026-05-11/x-2053601852261110201.md)
+  - [观察了三年，我把所有人用 AI 的水平分成了 10 个等级](articles/2026-05-11/x-2053704384505401826.md)
+- **2026-05-08**
+  - [逃离大厂之后，我才发现外面根本就没有下雨](articles/2026-05-08/x-2036725515701420062.md)
+  - [玉伯把 AI 时代小团队生产力的真相讲透了](articles/2026-05-08/x-2039579774528757976.md)
+  - [多智能体：哪些方法真正有效](articles/2026-05-08/x-2047054401341370639-cn.md)
+  - [Multi-Agents: What's Actually Working](articles/2026-05-08/x-2047054401341370639.md)
+  - [离开 Claude，发现外面根本没下雨](articles/2026-05-08/x-2052532414917104042.md)
+- **2026-04-14**
+  - [为什么你的"AI 优先"战略可能是错的](articles/2026-04-14/x-2043545596699750791-cn.md)
+  - [Why Your "AI-First" Strategy Is Probably Wrong](articles/2026-04-14/x-2043545596699750791.md)
+- **2026-03-19**
+  - [这个时代可能需要马克思](articles/2026-03-19/wx-K9iyiwGItLz_w5p3moQEeg.md)
+  - [Harness Engineering 为什么是 Agent 时代的"控制论"？](articles/2026-03-19/wx-SVUybMZb6uh5OCR3ceoBVA.md)
+  - [Apple Watch 15 个健康功能超全解析！](articles/2026-03-19/xhs-690afc280000000003021ea2.md)
+- **2026-03-17**
+  - [黄仁勋 GTC 2026 演讲实录：所有 SaaS 公司都将消失；Token 成本全球最低；"龙虾"创造了历史；Feynman 架构已在路上](articles/2026-03-17/wx-NatXWU9mjpKnKGWiWlTRpQ.md)
+- **2026-03-16**
+  - [万字长文：2025 年，我对 AI 编程的全部理解——Part 1](articles/2026-03-16/1773808651322.md)
+  - [解析 OpenClaw 26.3.8 大更新及 mem9 如何利用新 ContextEngine 接口实现全周期记忆管理](articles/2026-03-16/wx-4v1hRcNyuYMRcFHCr-2S4Q.md)
+  - ["Claude Code 这条路线错了"！元老级 AI 大师 Jeremy Howard 开炮：马斯克和 Dario 根本不懂现代软件工程](articles/2026-03-16/wx-7FcavO7t_2zBhVZEWlfaxg.md)
+  - [燃尽、重启、爆火：Clawdbot 创始人的 35 分钟访谈实录](articles/2026-03-16/x-2016614384886526221.md)
+  - [新的设计流程](articles/2026-03-16/x-2018385296610746403-cn.md)
+  - [The new design process](articles/2026-03-16/x-2018385296610746403.md)
+  - [规格即代码：Spec Driven Development 实践指南](articles/2026-03-16/x-2033303156340240481-cn.md)
+  - [The Spec Is the New Code: A Guide to Spec Driven Development](articles/2026-03-16/x-2033303156340240481.md)
+- **2026-03-14**
+  - [我们如何构建安全、可扩展的 Agent 沙箱基础设施](articles/2026-03-14/x-2027225210412470668-cn.md)
+  - [How We Built Secure, Scalable Agent Sandbox Infrastructure](articles/2026-03-14/x-2027225210412470668.md)
+  - [你不知道的 Claude Code：架构、治理与工程实践](articles/2026-03-14/x-2032091246588518683.md)
+
+---
+
+*This document was automatically generated based on commit [`34ce32b47199c599f2c0eec823f101ef0b2ce394`](https://github.com/erickchenyn/read-it-later/commit/34ce32b47199c599f2c0eec823f101ef0b2ce394).*
