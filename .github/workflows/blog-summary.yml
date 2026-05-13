@@ -1,0 +1,61 @@
+name: blog-summary
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "blogs/*.md"
+      - ".github/workflows/blog-summary.yml"
+  workflow_dispatch:
+
+jobs:
+  blog-summary:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get latest commit SHA
+        id: commit
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+      - name: Generate BLOGS.md
+        run: |
+          echo "# Blogs" > BLOGS.md
+          echo "" >> BLOGS.md
+
+          for md_file in $(ls -t blogs/*.md 2>/dev/null); do
+            [ -f "$md_file" ] || continue
+            title=$(head -20 "$md_file" | grep '^# ' | head -1 | sed 's/^# //')
+            if [ -n "$title" ]; then
+              echo "- [$title]($md_file)" >> BLOGS.md
+            fi
+          done
+
+          echo "" >> BLOGS.md
+          echo "---" >> BLOGS.md
+          echo "" >> BLOGS.md
+          echo "*This document was automatically generated based on commit [\`${{ steps.commit.outputs.sha }}\`](https://github.com/${{ github.repository }}/commit/${{ steps.commit.outputs.sha }}).*" >> BLOGS.md
+      - name: Check for changes
+        id: changes
+        run: |
+          if [ ! -f BLOGS.md ] || ! git diff --quiet BLOGS.md || git ls-files --others --exclude-standard | grep -q "^BLOGS.md$"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Commit and push changes
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --local user.email "noreply@anthropic.com"
+          git config --local user.name "Claude"
+          git add BLOGS.md
+          git commit -m "docs: auto summary (${{ steps.commit.outputs.sha }})"
+          git pull --rebase
+          git push
