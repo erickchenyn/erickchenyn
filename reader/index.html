@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reader</title>
+<link rel="icon" href="/reader/favicon.png" type="image/png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
+<link rel="stylesheet" href="/reader/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+  <div class="source-switcher" id="source-switcher">
+    <button class="source-tab active" data-source="articles">Articles</button>
+    <button class="source-tab" data-source="scratch">Scratch</button>
+  </div>
+  <div class="tree" id="tree"></div>
+</div>
+
+<div class="resize-handle" id="resize-handle"></div>
+
+<div class="content">
+  <div class="content-body" id="content-body">
+    <div class="placeholder">Select a file from the sidebar</div>
+  </div>
+</div>
+
+<script src="/reader/app.js"></script>
+</body>
+</html>
