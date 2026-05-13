@@ -23,32 +23,32 @@ jobs:
       - name: Get latest commit SHA
         id: commit
         run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-      - name: Generate README.md
+      - name: Generate ARTICLES.md
         run: |
-          echo "# Read It Later" > README.md
-          echo "" >> README.md
+          echo "# Read It Later" > ARTICLES.md
+          echo "" >> ARTICLES.md
 
           for date_dir in $(ls -rd articles/*/); do
             date=$(basename "$date_dir")
-            echo "- **$date**" >> README.md
+            echo "- **$date**" >> ARTICLES.md
 
             for md_file in "$date_dir"*.md; do
               [ -f "$md_file" ] || continue
               title=$(head -20 "$md_file" | grep '^# ' | head -1 | sed 's/^# //')
               if [ -n "$title" ]; then
-                echo "  - [$title]($md_file)" >> README.md
+                echo "  - [$title]($md_file)" >> ARTICLES.md
               fi
             done
           done
 
-          echo "" >> README.md
-          echo "---" >> README.md
-          echo "" >> README.md
-          echo "*This document was automatically generated based on commit [\`${{ steps.commit.outputs.sha }}\`](https://github.com/${{ github.repository }}/commit/${{ steps.commit.outputs.sha }}).*" >> README.md
+          echo "" >> ARTICLES.md
+          echo "---" >> ARTICLES.md
+          echo "" >> ARTICLES.md
+          echo "*This document was automatically generated based on commit [\`${{ steps.commit.outputs.sha }}\`](https://github.com/${{ github.repository }}/commit/${{ steps.commit.outputs.sha }}).*" >> ARTICLES.md
       - name: Check for changes
         id: changes
         run: |
-          if [ ! -f README.md ] || ! git diff --quiet README.md || git ls-files --others --exclude-standard | grep -q "^README.md$"; then
+          if [ ! -f ARTICLES.md ] || ! git diff --quiet ARTICLES.md || git ls-files --others --exclude-standard | grep -q "^ARTICLES.md$"; then
             echo "changed=true" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
@@ -60,7 +60,7 @@ jobs:
         run: |
           git config --local user.email "noreply@anthropic.com"
           git config --local user.name "Claude"
-          git add README.md
+          git add ARTICLES.md
           git commit -m "docs: auto summary (${{ steps.commit.outputs.sha }})"
           git pull --rebase
           git push
