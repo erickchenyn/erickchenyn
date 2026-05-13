@@ -5,8 +5,9 @@ A personal read-it-later repository for saving web articles as markdown files.
 ## Structure
 
 - `articles/<date>/` — Markdown articles organized by date
+- `scratch/` — Scratch notes and short-form writing
 - `.claude/skills/` — Claude Code skills for article capture and reading
-- `.github/workflows/` — Auto-generates README.md as article index on push
+- `.github/workflows/` — Auto-generates ARTICLES.md and SCRATCH.md indexes on push
 
 ## Dependencies
 

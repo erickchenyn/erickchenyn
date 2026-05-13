@@ -1,16 +1,16 @@
-name: blog-summary
+name: scratch-summary
 
 on:
   push:
     branches:
       - main
     paths:
-      - "blogs/*"
-      - ".github/workflows/blog-summary.yml"
+      - "scratch/*"
+      - ".github/workflows/scratch-summary.yml"
   workflow_dispatch:
 
 jobs:
-  blog-summary:
+  scratch-summary:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -23,25 +23,25 @@ jobs:
       - name: Get latest commit SHA
         id: commit
         run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-      - name: Generate BLOGS.md
+      - name: Generate SCRATCH.md
         run: |
-          echo "# Blogs" > BLOGS.md
-          echo "" >> BLOGS.md
+          echo "# Scratch" > SCRATCH.md
+          echo "" >> SCRATCH.md
 
-          for file in $(ls -t blogs/* 2>/dev/null); do
+          for file in $(ls -t scratch/* 2>/dev/null); do
             [ -f "$file" ] || continue
             name=$(basename "$file")
-            echo "- [$name]($file)" >> BLOGS.md
+            echo "- [$name]($file)" >> SCRATCH.md
           done
 
-          echo "" >> BLOGS.md
-          echo "---" >> BLOGS.md
-          echo "" >> BLOGS.md
-          echo "*This document was automatically generated based on commit [\`${{ steps.commit.outputs.sha }}\`](https://github.com/${{ github.repository }}/commit/${{ steps.commit.outputs.sha }}).*" >> BLOGS.md
+          echo "" >> SCRATCH.md
+          echo "---" >> SCRATCH.md
+          echo "" >> SCRATCH.md
+          echo "*This document was automatically generated based on commit [\`${{ steps.commit.outputs.sha }}\`](https://github.com/${{ github.repository }}/commit/${{ steps.commit.outputs.sha }}).*" >> SCRATCH.md
       - name: Check for changes
         id: changes
         run: |
-          if [ ! -f BLOGS.md ] || ! git diff --quiet BLOGS.md || git ls-files --others --exclude-standard | grep -q "^BLOGS.md$"; then
+          if [ ! -f SCRATCH.md ] || ! git diff --quiet SCRATCH.md || git ls-files --others --exclude-standard | grep -q "^SCRATCH.md$"; then
             echo "changed=true" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
@@ -53,7 +53,7 @@ jobs:
         run: |
           git config --local user.email "noreply@anthropic.com"
           git config --local user.name "Claude"
-          git add BLOGS.md
+          git add SCRATCH.md
           git commit -m "docs: auto summary (${{ steps.commit.outputs.sha }})"
           git pull --rebase
           git push
