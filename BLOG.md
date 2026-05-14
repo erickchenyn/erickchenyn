@@ -7,4 +7,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`9fe466f556314460775cc858043a52407bf3ad0c`](https://github.com/erickchenyn/read-it-later/commit/9fe466f556314460775cc858043a52407bf3ad0c).*
+*This document was automatically generated based on commit [`146807064e49c83593747ca070b64496fd03b126`](https://github.com/erickchenyn/erickchenyn/commit/146807064e49c83593747ca070b64496fd03b126).*
