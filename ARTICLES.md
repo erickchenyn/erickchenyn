@@ -1,5 +1,8 @@
 # Read It Later
 
+- **2026-05-14**
+  - [如何成为任何领域的前 1%](articles/2026-05-14/x-2054368734182359312.md)
+  - [Hermes+Obsidian+LLM Wiki 搭建本地知识库](articles/2026-05-14/x-2054523563248611675.md)
 - **2026-05-13**
   - [Agent Memory 调研与评测](articles/2026-05-13/moxt-agent-memory-research.md)
 - **2026-05-12**
@@ -51,4 +54,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`4d6fd90b25b5bc0092574810bf943ef25275576c`](https://github.com/erickchenyn/read-it-later/commit/4d6fd90b25b5bc0092574810bf943ef25275576c).*
+*This document was automatically generated based on commit [`b2c58e5ce69dc878fe5610be6a7df0bd49c3a489`](https://github.com/erickchenyn/erickchenyn/commit/b2c58e5ce69dc878fe5610be6a7df0bd49c3a489).*
