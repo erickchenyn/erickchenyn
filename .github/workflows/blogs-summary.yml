@@ -1,16 +1,16 @@
-name: blog-summary
+name: blogs-summary
 
 on:
   push:
     branches:
       - main
     paths:
-      - "blog/*"
-      - ".github/workflows/blog-summary.yml"
+      - "blogs/*"
+      - ".github/workflows/blogs-summary.yml"
   workflow_dispatch:
 
 jobs:
-  blog-summary:
+  blogs-summary:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -23,25 +23,25 @@ jobs:
       - name: Get latest commit SHA
         id: commit
         run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-      - name: Generate BLOG.md
+      - name: Generate BLOGS.md
         run: |
-          echo "# Blog" > BLOG.md
-          echo "" >> BLOG.md
+          echo "# Blogs" > BLOGS.md
+          echo "" >> BLOGS.md
 
-          for file in $(ls -t blog/* 2>/dev/null); do
+          for file in $(ls -t blogs/* 2>/dev/null); do
             [ -f "$file" ] || continue
             name=$(basename "$file")
-            echo "- [$name]($file)" >> BLOG.md
+            echo "- [$name]($file)" >> BLOGS.md
           done
 
-          echo "" >> BLOG.md
-          echo "---" >> BLOG.md
-          echo "" >> BLOG.md
-          echo "*This document was automatically generated based on commit [\`${{ steps.commit.outputs.sha }}\`](https://github.com/${{ github.repository }}/commit/${{ steps.commit.outputs.sha }}).*" >> BLOG.md
+          echo "" >> BLOGS.md
+          echo "---" >> BLOGS.md
+          echo "" >> BLOGS.md
+          echo "*This document was automatically generated based on commit [\`${{ steps.commit.outputs.sha }}\`](https://github.com/${{ github.repository }}/commit/${{ steps.commit.outputs.sha }}).*" >> BLOGS.md
       - name: Check for changes
         id: changes
         run: |
-          if [ ! -f BLOG.md ] || ! git diff --quiet BLOG.md || git ls-files --others --exclude-standard | grep -q "^BLOG.md$"; then
+          if [ ! -f BLOGS.md ] || ! git diff --quiet BLOGS.md || git ls-files --others --exclude-standard | grep -q "^BLOGS.md$"; then
             echo "changed=true" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
@@ -53,7 +53,7 @@ jobs:
         run: |
           git config --local user.email "noreply@anthropic.com"
           git config --local user.name "Claude"
-          git add BLOG.md
+          git add BLOGS.md
           git commit -m "docs: auto summary (${{ steps.commit.outputs.sha }})"
           git pull --rebase
           git push
