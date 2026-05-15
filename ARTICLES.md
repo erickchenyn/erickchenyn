@@ -1,5 +1,8 @@
 # Read It Later
 
+- **2026-05-15**
+  - [从 Computer Use 到 Datacenter Use：如何让 AI Agent 像调用函数一样驱动数据中心？](articles/2026-05-15/wx-0Qce15eCqoTpXUk26pQsQQ.md)
+  - [当 Agent 开始接管工作流，企业最在意的三件事：安全运行、稳定交付、持续进化](articles/2026-05-15/wx-H_uMCEe6SalJUHn_d90rWA.md)
 - **2026-05-14**
   - [如何成为任何领域的前 1%](articles/2026-05-14/x-2054368734182359312.md)
   - [Hermes+Obsidian+LLM Wiki 搭建本地知识库](articles/2026-05-14/x-2054523563248611675.md)
@@ -54,4 +57,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`b2c58e5ce69dc878fe5610be6a7df0bd49c3a489`](https://github.com/erickchenyn/erickchenyn/commit/b2c58e5ce69dc878fe5610be6a7df0bd49c3a489).*
+*This document was automatically generated based on commit [`5cd9975e229c7a1068cd9ed8d106420a57f00bad`](https://github.com/erickchenyn/erickchenyn/commit/5cd9975e229c7a1068cd9ed8d106420a57f00bad).*
