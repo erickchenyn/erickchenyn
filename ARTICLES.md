@@ -1,5 +1,7 @@
 # Read It Later
 
+- **2026-05-19**
+  - [外行瞎写的 Vibe Coding，都能并入 Agent 工程了：最吓人的是，我们"摆烂"有正当理由了](articles/2026-05-19/wx-ONABFuHsqZqZV1JP6prdfw.md)
 - **2026-05-15**
   - [从 Computer Use 到 Datacenter Use：如何让 AI Agent 像调用函数一样驱动数据中心？](articles/2026-05-15/wx-0Qce15eCqoTpXUk26pQsQQ.md)
   - [当 Agent 开始接管工作流，企业最在意的三件事：安全运行、稳定交付、持续进化](articles/2026-05-15/wx-H_uMCEe6SalJUHn_d90rWA.md)
@@ -57,4 +59,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`5cd9975e229c7a1068cd9ed8d106420a57f00bad`](https://github.com/erickchenyn/erickchenyn/commit/5cd9975e229c7a1068cd9ed8d106420a57f00bad).*
+*This document was automatically generated based on commit [`8364ad860f50c63a4e01e82e887a7962c653caee`](https://github.com/erickchenyn/erickchenyn/commit/8364ad860f50c63a4e01e82e887a7962c653caee).*
